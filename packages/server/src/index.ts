@@ -294,14 +294,14 @@ async function prepareController() {
     loader,
     config.maaframework.adb,
     config.maaframework.address,
-    MaaAdbControllerTypeEnum.Input_Preset_Minitouch |
-      MaaAdbControllerTypeEnum.Screencap_MinicapStream,
+    MaaAdbControllerTypeEnum.Input_Preset_Adb |
+    MaaAdbControllerTypeEnum.Screencap_FastestWay,
     await fs.readFile(
       path.join(config.maaframework.root, 'controller_config.json'),
       'utf-8'
     ),
     (msg, detail) => {
-      console.log(msg, detail)
+      console.log('MaaController cb:', msg, detail)
     }
   )
 

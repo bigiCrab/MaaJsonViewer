@@ -2,7 +2,7 @@
   "prebuilt": {
     "minicap": {
       "root": "./library/maaframework/MaaAgentBinary/minicap",
-      "arch": ["x86", "armeabi-v7a", "armeabi"],
+      "arch": ["x86_64", "x86", "armeabi-v7a", "armeabi"],
       "sdk": [31, 29, 28, 27, 26, 25, 24, 23, 22, 21, 19, 18, 17, 16, 15, 14]
     },
     "minitouch": {
@@ -152,6 +152,7 @@
       "-s",
       "{ADB_SERIAL}",
       "shell",
+      "export LD_LIBRARY_PATH=/data/local/tmp/; \"/data/local/tmp/{BIN_WORKING_FILE}\" -P 1280x720@1280x720/0",
       "export LD_LIBRARY_PATH=/data/local/tmp/; \"/data/local/tmp/{BIN_WORKING_FILE}\" {BIN_EXTRA_PARAMS}"
     ],
     "InvokeApp": [

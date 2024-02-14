@@ -6,8 +6,8 @@
   "active": "./saves/res.zip",
   "maaframework": {
     "emulator": true,
-    "adb": "adb",
-    "address": "127.0.0.1:5555",
+    "adb": "D:/Games/Nox/Nox/bin/nox_adb.exe",
+    "address": "127.0.0.1:62025",
     "root": "./library/maaframework",
     "log": "./debug",
     "debug": false
