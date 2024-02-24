@@ -191,21 +191,33 @@ function doSave() {
   <div class="flex flex-col gap-2">
     <div class="flex gap-2">
       <NavigationButtons></NavigationButtons>
-      <NButton @click="takeImage" :disabled="!monitor?.imageURL">
+      <NButton
+        @click="takeImage"
+        title="takeImage"
+        :disabled="!monitor?.imageURL"
+      >
         <template #icon>
           <NIcon>
             <CropFreeOutlined></CropFreeOutlined>
           </NIcon>
         </template>
       </NButton>
-      <NButton @click="imageURL = ''" :disabled="imageURL === ''">
+      <NButton
+        @click="imageURL = ''"
+        title="clearImage"
+        :disabled="imageURL === ''"
+      >
         <template #icon>
           <NIcon>
             <SyncOutlined></SyncOutlined>
           </NIcon>
         </template>
       </NButton>
-      <NButton @click="requireSave" :disabled="!imageURL || !rect">
+      <NButton
+        @click="requireSave"
+        title="saveImage"
+        :disabled="!imageURL || !rect"
+      >
         <template #icon>
           <NIcon>
             <SaveAltRound></SaveAltRound>
@@ -235,6 +247,9 @@ function doSave() {
         </span>
       </div>
     </div>
-    <canvas v-if="rect" ref="cropEl"></canvas>
+    <canvas
+      v-if="rect"
+      ref="cropEl"
+    ></canvas>
   </div>
 </template>

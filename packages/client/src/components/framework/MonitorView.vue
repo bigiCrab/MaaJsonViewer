@@ -13,6 +13,10 @@ const imageURL = ref<string | null>(null)
 
 const canvasEl = ref<HTMLCanvasElement | null>(null)
 
+// TODO make this configurable
+const deviceWidth = 1280
+const deviceHeight = 720
+
 defineExpose({
   imageURL
 })
@@ -21,13 +25,14 @@ let socket: WebSocket | null
 
 async function tryConnect() {
   let url: string | null = null
-  let fr = 0
-  let prefr = 0
+  let frame = 0
+  let drewFrame = 0
   const ctx = canvasEl.value?.getContext('2d')
   if (!ctx) {
     return
   }
   socket = await api.controller()
+  // console.log('get controller socket', socket)
   socket.onclose = () => {
     console.log('close!')
     socket = null
@@ -36,23 +41,23 @@ async function tryConnect() {
     }, 100)
   }
   socket.onmessage = async ev => {
-    // console.log('got image')
-    fr += 1
-    const cur = fr
+    frame += 1
+    const curFrame = frame
+    // console.log('got image', frame)
 
     if (url) {
       URL.revokeObjectURL(url)
     }
     url = URL.createObjectURL(ev.data as Blob)
-    const image = new Image(1280, 720)
+    const image = new Image(deviceWidth, deviceHeight)
     image.onload = () => {
-      if (cur < prefr) {
-        // console.log('skip image')
+      if (curFrame < drewFrame) {
+        // console.log('skip image', { cur: curFrame, preFrame: drewFrame })
         return
       }
-      prefr = cur
-      // console.log('draw image')
-      ctx.drawImage(image, 0, 0, 1280, 720, 0, 0, props.width, props.height)
+      drewFrame = curFrame
+      // console.log('draw image', { cur: curFrame, preFrame: drewFrame })
+      ctx.drawImage(image, 0, 0, deviceWidth, deviceHeight, 0, 0, props.width, props.height)
     }
     image.src = url
   }

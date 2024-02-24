@@ -15,22 +15,27 @@ const router = useRouter()
 
 const infos: {
   name: string
+  title: string
   icon: Component
 }[] = [
   {
     name: 'edit',
+    title: 'edit pipeline',
     icon: EditOutlined
   },
   {
     name: 'roi',
+    title: 'roi',
     icon: CropOutlined
   },
   {
     name: 'eval',
+    title: 'eval',
     icon: BuildOutlined
   },
   {
     name: 'visual',
+    title: 'visual',
     icon: MapOutlined
   }
 ]
@@ -40,6 +45,7 @@ const infos: {
   <IconButton
     v-for="info in infos"
     :key="info.name"
+    :title="info.title"
     :text="false"
     :icon="info.icon"
     :type="route.name === info.name ? 'primary' : 'default'"
