@@ -17,5 +17,9 @@
     "axios": "^1.4.0",
     "extract-zip": "^2.0.1",
     "prettier": "^3.0.1"
+  },
+  "dependencies": {
+    "@vueuse/components": "^10.8.0",
+    "@vueuse/core": "^10.8.0"
   }
 }

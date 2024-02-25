@@ -5,8 +5,9 @@ import {
   SaveAltRound,
   SyncOutlined
 } from '@vicons/material'
+import { UseClipboard } from '@vueuse/components'
 import { Buffer } from 'buffer'
-import { NButton, NCard, NIcon, NInput, NModal } from 'naive-ui'
+import { NButton, NCard, NIcon, NInput, NInputNumber, NModal } from 'naive-ui'
 import { computed, nextTick, onActivated, onDeactivated, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -35,6 +36,8 @@ const cropEl = ref<HTMLCanvasElement | null>(null)
 const curPos = ref<[number, number]>([0, 0])
 const oldPos = ref<[number, number] | null>(null)
 const newPos = ref<[number, number] | null>(null)
+const oldTimestamp = ref<number | null>(null)
+const newTimestamp = ref<number | null>(null)
 
 watch(targetEl, el => {
   if (el) {
@@ -48,6 +51,9 @@ watch(targetEl, el => {
       }
       return x
     }
+    const getTimestamp = () => {
+      return new Date().getTime()
+    }
     el.onpointermove = ev => {
       curPos.value = [fix(ev.offsetX, 1280), fix(ev.offsetY, 720)]
       render()
@@ -55,6 +61,8 @@ watch(targetEl, el => {
     el.onpointerdown = ev => {
       el.setPointerCapture(ev.pointerId)
       oldPos.value = [...curPos.value]
+      oldTimestamp.value = getTimestamp()
+      newTimestamp.value = null
       newPos.value = null
       render()
     }
@@ -68,8 +76,10 @@ watch(targetEl, el => {
         curPos.value[1] === oldPos.value[1]
       ) {
         oldPos.value = null
+        oldTimestamp.value = null
       } else {
         newPos.value = [...curPos.value]
+        newTimestamp.value = getTimestamp()
       }
       render()
     }
@@ -89,15 +99,22 @@ const rect = computed<Rect | null>(() => {
   const b = Math.max(oldPos.value[1], np[1])
   return [l, t, r - l, b - t]
 })
+const suggestPadding = ref<number>(50)
 const suggestRect = computed<Rect | null>(() => {
   if (!rect.value) {
     return null
   }
-  const l = Math.max(rect.value[0] - 50, 0)
-  const t = Math.max(rect.value[1] - 50, 0)
-  const r = Math.min(rect.value[0] + rect.value[2] + 50, 1280)
-  const b = Math.min(rect.value[1] + rect.value[3] + 50, 720)
+  const l = Math.max(rect.value[0] - suggestPadding.value, 0)
+  const t = Math.max(rect.value[1] - suggestPadding.value, 0)
+  const r = Math.min(rect.value[0] + rect.value[2] + suggestPadding.value, 1280)
+  const b = Math.min(rect.value[1] + rect.value[3] + suggestPadding.value, 720)
   return [l, t, r - l, b - t]
+})
+const clickDuration = computed<number | null>(() => {
+  if (!newTimestamp.value || !oldTimestamp.value) {
+    return null
+  }
+  return newTimestamp.value - oldTimestamp.value
 })
 
 function render() {
@@ -130,11 +147,13 @@ function render() {
 }
 
 function takeImage() {
-  const url = monitor.value?.imageURL
-  if (url) {
-    imageURL.value = url
-    image.value = new Image()
-    image.value.src = imageURL.value
+  image.value = monitor.value?.imageEle?.cloneNode() as HTMLImageElement
+  if (image) {
+    // TODO remove URL part
+    imageURL.value = image.value.src
+    // imageURL.value = url
+    // image.value = new Image()
+    // image.value.src = imageURL.value
     image.value.onload = () => {
       const cvs = targetEl.value!
       cvs.width = 1280
@@ -194,7 +213,7 @@ function doSave() {
       <NButton
         @click="takeImage"
         title="takeImage"
-        :disabled="!monitor?.imageURL"
+        :disabled="!monitor?.imageEle"
       >
         <template #icon>
           <NIcon>
@@ -232,6 +251,7 @@ function doSave() {
       :width="1280"
       :height="720"
     ></MonitorView>
+    <!-- action log -->
     <div class="flex gap-2">
       <canvas
         v-if="imageURL"
@@ -239,17 +259,42 @@ function doSave() {
         style="width: 1280px; height: 720px"
       ></canvas>
       <div class="flex flex-col gap-2">
-        <span v-if="rect">
-          {{ rect.join(',') }}
+        <!-- TODO make this prittier -->
+        <span v-if="clickDuration" class="grid grid-cols-3 gap-2">
+          clickDuration:
+          <span class="text-emerald-900"> {{ clickDuration }} ms </span>
+          <UseClipboard v-slot="{ copy, copied }" :source="clickDuration">
+            <NButton @click="copy()">
+              {{ copied ? 'Copied' : 'Copy' }}
+            </NButton>
+          </UseClipboard>
         </span>
-        <span v-if="suggestRect">
-          {{ suggestRect.join(',') }}
+        <span v-if="rect" class="grid grid-cols-3 gap-2">
+          rect:
+          <span class="text-emerald-900"> {{ rect.join(',') }} </span>
+          <UseClipboard v-slot="{ copy, copied }" :source="rect.join(',')">
+            <NButton @click="copy()">
+              {{ copied ? 'Copied' : 'Copy' }}
+            </NButton>
+          </UseClipboard>
         </span>
+        <span v-if="suggestRect" class="grid grid-cols-3 gap-2">
+          padding offset:
+          <span class="text-emerald-900"> {{ suggestPadding }} px </span>
+          <NInputNumber v-model:value="suggestPadding" />
+          suggestRect:
+          <span class="text-emerald-900"> {{ suggestRect.join(',') }} </span>
+          <UseClipboard
+            v-slot="{ copy, copied }"
+            :source="suggestRect.join(',')"
+          >
+            <NButton @click="copy()">
+              {{ copied ? 'Copied' : 'Copy' }}
+            </NButton>
+          </UseClipboard>
+        </span>
+        <canvas v-if="rect" ref="cropEl"></canvas>
       </div>
     </div>
-    <canvas
-      v-if="rect"
-      ref="cropEl"
-    ></canvas>
   </div>
 </template>

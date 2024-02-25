@@ -10,6 +10,7 @@ const props = defineProps<{
 }>()
 
 const imageURL = ref<string | null>(null)
+const imageEle = ref<HTMLImageElement | null>(null)
 
 const canvasEl = ref<HTMLCanvasElement | null>(null)
 
@@ -18,7 +19,8 @@ const deviceWidth = 1280
 const deviceHeight = 720
 
 defineExpose({
-  imageURL
+  imageURL,
+  imageEle
 })
 
 let socket: WebSocket | null
@@ -56,6 +58,7 @@ async function tryConnect() {
         return
       }
       drewFrame = curFrame
+      imageEle.value = image
       // console.log('draw image', { cur: curFrame, preFrame: drewFrame })
       ctx.drawImage(image, 0, 0, deviceWidth, deviceHeight, 0, 0, props.width, props.height)
     }
