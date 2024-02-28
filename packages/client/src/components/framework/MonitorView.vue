@@ -18,6 +18,8 @@ const canvasEl = ref<HTMLCanvasElement | null>(null)
 const deviceWidth = 1280
 const deviceHeight = 720
 
+const controllerStatus = ref<string>('none')
+
 defineExpose({
   imageURL,
   imageEle
@@ -33,9 +35,12 @@ async function tryConnect() {
   if (!ctx) {
     return
   }
+  controllerStatus.value = 'connecting'
   socket = await api.controller()
+  controllerStatus.value = 'get controller'
   // console.log('get controller socket', socket)
   socket.onclose = () => {
+    controllerStatus.value = 'close'
     console.log('close!')
     socket = null
     setTimeout(() => {
@@ -46,6 +51,7 @@ async function tryConnect() {
     frame += 1
     const curFrame = frame
     // console.log('got image', frame)
+    controllerStatus.value = `get frame: ${curFrame}`
 
     if (url) {
       URL.revokeObjectURL(url)
@@ -61,6 +67,7 @@ async function tryConnect() {
       imageEle.value = image
       // console.log('draw image', { cur: curFrame, preFrame: drewFrame })
       ctx.drawImage(image, 0, 0, deviceWidth, deviceHeight, 0, 0, props.width, props.height)
+      controllerStatus.value = `rendered frame: ${curFrame}`
     }
     image.src = url
   }
@@ -145,6 +152,7 @@ function handlePointerUp(ev: PointerEvent) {
       @pointerdown="handlePointerDown"
       @pointerup="handlePointerUp"
     ></canvas>
+    <div>status: {{ controllerStatus }}</div>
   </div>
 </template>
 
