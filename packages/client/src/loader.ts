@@ -1,6 +1,7 @@
 import * as api from '@/api'
 import { config } from '@/data'
 import { fs } from '@/filesystem'
+import { useNotification } from 'naive-ui'
 
 export async function loadFS() {
   const zip = await api.load()
@@ -19,5 +20,27 @@ export async function loadCfg() {
 export async function saveCfg() {
   if (config.value) {
     await api.saveConfig(config.value)
+  }
+}
+
+export function useLoader() {
+  const notification = useNotification()
+  return {
+    async saveFS() {
+      await saveFS();
+      notification.create({
+        title: 'Save Success',
+        duration: 5000,
+        closable: false
+      })
+    },
+    async loadFS() {
+      await loadFS();
+      notification.create({
+        title: 'Load Success',
+        duration: 5000,
+        closable: false
+      })
+    }
   }
 }

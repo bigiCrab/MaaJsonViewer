@@ -23,7 +23,7 @@ import {
   setTask
 } from '@/data'
 import { fs } from '@/filesystem'
-import { loadFS, saveCfg, saveFS } from '@/loader'
+import { saveCfg, useLoader } from '@/loader'
 
 import NavigationButtons from '@/components/NavigationButtons.vue'
 import TaskEdit from '@/components/TaskEdit.vue'
@@ -32,6 +32,7 @@ import TaskTree from '@/components/tree/TaskTree.vue'
 import MainLayout from '@/layout/MainLayout.vue'
 
 const router = useRouter()
+const loader = useLoader()
 
 function handleKey(ev: KeyboardEvent) {
   if (ev.key === 'F2') {
@@ -54,7 +55,9 @@ function handleKey(ev: KeyboardEvent) {
         }
       }
     } else if (ev.key === 's' || ev.key === 'S') {
-      saveFS()
+      ev.stopPropagation()
+      ev.preventDefault()
+      loader.saveFS()
       saveCfg()
     }
   }
@@ -124,14 +127,14 @@ function doValidate() {
           </NIcon>
         </template>
       </NButton>
-      <NButton @click="saveFS">
+      <NButton @click="loader.saveFS" title="save">
         <template #icon>
           <NIcon>
             <FileDownloadOutlined></FileDownloadOutlined>
           </NIcon>
         </template>
       </NButton>
-      <NButton @click="loadFS">
+      <NButton @click="loader.loadFS" title="load">
         <template #icon>
           <NIcon>
             <FileUploadOutlined></FileUploadOutlined>
