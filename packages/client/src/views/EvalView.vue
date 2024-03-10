@@ -110,7 +110,11 @@ async function tryStart() {
   <MainLayout>
     <template #action>
       <NavigationButtons></NavigationButtons>
-      <NButton @click="tryStart" :disabled="!inited">
+      <NButton
+        @click="tryStart"
+        :disabled="!inited"
+        :title="'inited: ' + inited"
+      >
         <template #icon>
           <NIcon>
             <PlayArrowOutlined></PlayArrowOutlined>
@@ -145,7 +149,11 @@ async function tryStart() {
                       }
                     "
                   ></NCheckbox>
-                  <NButton :disabled="value.status === 'skipped'" text>
+                  <NButton
+                    :disabled="value.status === 'skipped'"
+                    text
+                    :title="'status: ' + value.status"
+                  >
                     <!-- 'skipped' | 'pending' | 'running' | 'success' | 'error' -->
                     <template #icon>
                       <NIcon>

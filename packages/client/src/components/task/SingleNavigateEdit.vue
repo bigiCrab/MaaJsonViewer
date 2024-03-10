@@ -73,6 +73,9 @@ const options = computed(() => {
       secondary
       :disabled="!(value in taskIndex)"
       :type="value in taskIndex ? 'default' : 'error'"
+      :title="`${
+        navTask?.is_sub ? 'subTask' : navTask ? 'normalTask' : 'errorTask'
+      } (click navigate to task)`"
       @click="navigate(taskIndex[value])"
     >
       <template #icon>
@@ -91,7 +94,7 @@ const options = computed(() => {
         autocomplete: 'disabled'
       }"
       :options="options"
-      placeholder="task"
+      placeholder="type then select task"
     ></NAutoComplete>
     <template v-if="navTask">
       <template v-if="navTask.template">
@@ -114,7 +117,7 @@ const options = computed(() => {
           </span>
         </NPopover>
       </template>
-      <NButton>
+      <NButton :title="'action: ' + navTask.action">
         <template #icon>
           <NIcon>
             <WavingHandOutlined

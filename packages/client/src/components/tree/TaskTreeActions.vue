@@ -40,9 +40,11 @@ const uploadEl = ref<InstanceType<typeof UploadImage> | null>(null)
   <UploadImage ref="uploadEl"></UploadImage>
 
   <div class="flex gap-2">
+    <!-- dir -->
     <template v-if="active && path.key_is_dir(active)">
       <IconButton
         :icon="AddPhotoAlternateOutlined"
+        :title="'Add Picture'"
         @click="
           () => {
             if (active) {
@@ -53,6 +55,7 @@ const uploadEl = ref<InstanceType<typeof UploadImage> | null>(null)
       ></IconButton>
       <IconButton
         :icon="AddOutlined"
+        :title="'Add Json'"
         @click="
           () => {
             if (active) {
@@ -63,6 +66,7 @@ const uploadEl = ref<InstanceType<typeof UploadImage> | null>(null)
       ></IconButton>
       <IconButton
         :icon="CreateNewFolderOutlined"
+        :title="'Add Folder'"
         @click="
           () => {
             if (active) {
@@ -72,9 +76,11 @@ const uploadEl = ref<InstanceType<typeof UploadImage> | null>(null)
         "
       ></IconButton>
     </template>
+    <!-- task -->
     <template v-else-if="isTask">
       <IconButton
         :icon="DeleteOutlined"
+        :title="'Delete'"
         @click="
           () => {
             if (active) {
@@ -84,10 +90,12 @@ const uploadEl = ref<InstanceType<typeof UploadImage> | null>(null)
         "
       ></IconButton>
     </template>
+    <!-- json -->
     <template v-else>
       <IconButton
         v-if="isJson"
         :icon="AddOutlined"
+        :title="'Add Task'"
         @click="
           () => {
             if (active) {
@@ -98,6 +106,7 @@ const uploadEl = ref<InstanceType<typeof UploadImage> | null>(null)
       ></IconButton>
       <IconButton
         :icon="DeleteOutlined"
+        :title="'Delete'"
         @click="
           () => {
             if (active) {
@@ -107,6 +116,7 @@ const uploadEl = ref<InstanceType<typeof UploadImage> | null>(null)
         "
       ></IconButton>
     </template>
+    <!-- unfold -->
     <IconButton
       :icon="UnfoldLessOutlined"
       @click="expandKey = ['/' as PathKey]"

@@ -2,6 +2,7 @@
 import { useDebounceFn } from '@vueuse/core'
 import { onMounted, watch } from 'vue'
 import { RouterView } from 'vue-router'
+import { NNotificationProvider } from 'naive-ui'
 
 import { config } from '@/data'
 import { loadCfg, loadFS, saveCfg } from '@/loader'
@@ -25,9 +26,11 @@ onMounted(async () => {
 </script>
 
 <template>
-  <RouterView v-slot="{ Component }">
-    <KeepAlive>
-      <component :is="Component"></component>
-    </KeepAlive>
-  </RouterView>
+  <n-notification-provider>
+    <RouterView v-slot="{ Component }">
+      <KeepAlive>
+        <component :is="Component"></component>
+      </KeepAlive>
+    </RouterView>
+  </n-notification-provider>
 </template>
