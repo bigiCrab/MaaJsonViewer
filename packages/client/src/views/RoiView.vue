@@ -5,7 +5,7 @@ import {
   SaveAltRound,
   SyncOutlined
 } from '@vicons/material'
-import { UseClipboard } from '@vueuse/components'
+import { useClipboard } from '@vueuse/core'
 import { Buffer } from 'buffer'
 import { NButton, NCard, NIcon, NInput, NInputNumber, NModal } from 'naive-ui'
 import { computed, nextTick, onActivated, onDeactivated, ref, watch } from 'vue'
@@ -187,6 +187,8 @@ function doSave() {
   )
   showSave.value = false
 }
+
+const { copy } = useClipboard()
 </script>
 
 <template>
@@ -260,38 +262,30 @@ function doSave() {
       ></canvas>
       <div class="flex flex-col gap-2">
         <!-- TODO make this prittier -->
-        <span v-if="clickDuration" class="grid grid-cols-3 gap-2">
+        <span v-if="clickDuration" class="grid grid-cols-2 gap-2">
           clickDuration:
-          <span class="text-emerald-900"> {{ clickDuration }} ms </span>
-          <UseClipboard v-slot="{ copy, copied }" :source="clickDuration">
-            <NButton @click="copy()">
-              {{ copied ? 'Copied' : 'Copy' }}
-            </NButton>
-          </UseClipboard>
-        </span>
-        <span v-if="rect" class="grid grid-cols-3 gap-2">
-          rect:
-          <span class="text-emerald-900"> {{ rect.join(',') }} </span>
-          <UseClipboard v-slot="{ copy, copied }" :source="rect.join(',')">
-            <NButton @click="copy()">
-              {{ copied ? 'Copied' : 'Copy' }}
-            </NButton>
-          </UseClipboard>
-        </span>
-        <span v-if="suggestRect" class="grid grid-cols-3 gap-2">
-          padding offset:
-          <span class="text-emerald-900"> {{ suggestPadding }} px </span>
-          <NInputNumber v-model:value="suggestPadding" />
-          suggestRect:
-          <span class="text-emerald-900"> {{ suggestRect.join(',') }} </span>
-          <UseClipboard
-            v-slot="{ copy, copied }"
-            :source="suggestRect.join(',')"
+          <span
+            class="text-emerald-900"
+            @click="copy(clickDuration.toString())"
           >
-            <NButton @click="copy()">
-              {{ copied ? 'Copied' : 'Copy' }}
-            </NButton>
-          </UseClipboard>
+            {{ clickDuration }} ms
+          </span>
+        </span>
+        <span v-if="rect" class="grid grid-cols-2 gap-2">
+          rect:
+          <span class="text-emerald-900" @click="copy(rect.join(','))">
+            {{ rect.join(',') }}
+          </span>
+        </span>
+        <span v-if="suggestRect" class="grid grid-cols-2 gap-2">
+          padding offset:
+          <span class="text-emerald-900 flex items-center">
+            <NInputNumber v-model:value="suggestPadding" /> px
+          </span>
+          suggestRect:
+          <span class="text-emerald-900" @click="copy(suggestRect.join(','))">
+            {{ suggestRect.join(',') }}
+          </span>
         </span>
         <canvas v-if="rect" ref="cropEl"></canvas>
       </div>
