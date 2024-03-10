@@ -152,7 +152,7 @@ async function main() {
         if (pending) {
           // console.log(`/api/controller ${id} skipped`)
           skipCount += 1
-          if (skipCount > 10) {
+          if (skipCount > 100) {
             console.log(`/api/controller ${id} skip too much`)
             ws.close()
           }
